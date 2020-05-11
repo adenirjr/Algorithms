@@ -7,25 +7,25 @@ import java.util.NoSuchElementException;
  * Write a generic data type for a deque and a randomized queue.
  * The goal of this assignment is to implement elementary data structures using arrays and linked lists,
  * and to introduce you to generics and iterators.
- *
+ * <p>
  * Your deque implementation must support each deque operation (including construction)
  * in constant worst-case time. A deque containing n items must use at most 48n + 192 bytes of memory.
  * Additionally, your iterator implementation must support each operation
  * (including construction) in constant worst-case time.
- *
- *
+ * <p>
+ * <p>
  * https://coursera.cs.princeton.edu/algs4/assignments/queues/specification.php
  *
- * @author Adenir Junior
  * @param <Item>
+ * @author Adenir Junior
  */
 public class Deque<Item> implements Iterable<Item> {
 
     // 16 bytes overhead
     // 8 bytes pointer to inner class
 
-    private Node head; // 8 bytes
-    private Node tail; // 8 bytes
+    private Node<Item> head; // 8 bytes
+    private Node<Item> tail; // 8 bytes
 
     private int size; // 4 bytes
 
@@ -50,12 +50,14 @@ public class Deque<Item> implements Iterable<Item> {
         }
 
         final Node<Item> first = head;
-        final Node<Item> newNode = new Node(item, first, null);
+        final Node<Item> newNode = new Node<>(item, first, null);
 
         head = newNode;
 
         if (first == null) {
             tail = newNode;
+        } else {
+            first.prev = newNode;
         }
 
         size++;
@@ -68,7 +70,7 @@ public class Deque<Item> implements Iterable<Item> {
         }
 
         final Node<Item> last = tail;
-        final Node<Item> newNode = new Node(item, null, last);
+        final Node<Item> newNode = new Node<>(item, null, last);
 
         tail = newNode;
 
@@ -112,6 +114,8 @@ public class Deque<Item> implements Iterable<Item> {
 
         if (tail == null) {
             head = null;
+        } else {
+            tail.next = null;
         }
 
         size--;
@@ -122,7 +126,6 @@ public class Deque<Item> implements Iterable<Item> {
     // return an iterator over items in order from front to back
     public Iterator<Item> iterator() {
         return new Iterator<Item>() {
-
             private Node<Item> pointer = head;
 
             @Override
@@ -150,15 +153,15 @@ public class Deque<Item> implements Iterable<Item> {
      * content ref = 8 bytes
      * next = 8 bytes
      * prev = 8 bytes
-     *
+     * <p>
      * 40 bytes each Node
      *
      * @param <Item>
      */
-    private static class Node<Item> {
-        Item content;
+    private class Node<Item> {
         Node<Item> next;
         Node<Item> prev;
+        Item content;
 
         public Node(final Item item, final Node<Item> next, final Node<Item> prev) {
             this.content = item;
